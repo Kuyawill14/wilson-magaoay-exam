@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Video List</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css" rel="stylesheet">  
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primaryColor: "#193256",
+            }
+          }
+        }
+      }
+    </script>
+</head>
+<body>
+
+    <div id="MainApp" v-bind:title="timestamp" class="experiment-block">   
+      <div class="container mx-auto">
+        <div class="p-4">
+          <div class="text-center">
+            <div class="flex justify-center">
+              <img v-bind:src="channel_info.profile_picture" alt="YouTube Logo" class=" w-40 h-40  mx-auto">
+            </div>
+            <h1 class="lg:text-5xl text-2xl font-semibold">{{channel_info.name}}</h1>
+            <p class="text-center"></p>
+            <p class="lg:max-w-[1000px] lg:mx-auto text-[16px] leading-6 text-gray-600 mt-4">{{channel_info.description}}</p>
+          </div>
+        </div>
+
+        <div ref="content" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-3">
+          <div @mouseover="isHovered = item.id" @mouseleave="isHovered = item.id"
+           v-on:click="viewVideo(item.video_link)" v-for="item in paginatedVideoList" class="relative shadow-lg flex flex-col h-full hover:shadow-2xl bg-white border border-gray-200 rounded-lg cursor-pointer">
+            <img v-bind:src="item.thumbnail" alt="Video Thumbnail" class="w-full h-[14rem] rounded-t-lg object-cover mb-2">
+            <span v-bind:class="isHovered == item.id ? 'opacity-100' : 'opacity-0'" class="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center transition-opacity duration-500">
+              <span class="h-[14rem] w-full rounded-lg bg-gray-500 opacity-60 absolute top-0 left-0"></span>
+              <span class="h-16 w-16 rounded-full opacity-90 flex items-center justify-center absolute top-20 left-50">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M0 10C0 4.477 4.477 0 10 0s10 4.477 10 10-4.477 10-10 10S0 15.523 0 10zm9.996 7.585a.793.793 0 0 1-.62-.303l-4.903-6a.799.799 0 0 1 0-1.013l4.903-6a.797.797 0 0 1 1.233.994L6.003 10l4.604 5.725a.798.798 0 0 1-.612 1.26z" clip-rule="evenodd" />
+                </svg>
+              </span>
+            </span>
+          <!--   <span v-bind:class="isHovered == item.id ? 'opacity-100' : 'opacity-0'" class="absolute top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/4">
+              <span class="h-full w-full rounded-lg bg-gray-500 opacity-60 absolute top-0 left-0"></span>
+              <span class="h-16 w-16 rounded-full opacity-100 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M0 10C0 4.477 4.477 0 10 0s10 4.477 10 10-4.477 10-10 10S0 15.523 0 10zm9.996 7.585a.793.793 0 0 1-.62-.303l-4.903-6a.799.799 0 0 1 0-1.013l4.903-6a.797.797 0 0 1 1.233.994L6.003 10l4.604 5.725a.798.798 0 0 1-.612 1.26z" clip-rule="evenodd" />
+                </svg>
+              </span>
+            </span> -->
+            <div class="p-4">
+              <h2 class="text-lg font-semibold text-primaryColor leading-7">{{item.title}}</h2>
+              <p class="line-clamp-4 overflow-hidden my-3">
+                {{item.description}}
+              </p>
+            </div>
+           
+          </div>
+        </div>
+        <div class="flex justify-between my-5 gap-4 items-center">
+          <button v-on:click="previousPage()" v-bind:class="currentPage > 1 ? 'hover:bg-primaryColor hover:text-white' : 'opacity-50'"
+          class="px-4 py-2 border border-primaryColor text-primaryColor rounded-md" v-bind:disabled="currentPage == 1">Previous</button>
+          <span class="text-gray-600 text-[16px]">{{currentPage}}/ {{totalPages}}</span>
+          <button v-on:click="nextPage()" v-bind:class="currentPage == totalPages ? 'opacity-50' : 'hover:bg-primaryColor hover:text-white'"
+          class="px-4 py-2 border border-primaryColor text-primaryColor rounded-md" v-bind:disabled="currentPage == totalPages">Next</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+        new Vue({
+          el: "#MainApp",
+          data: {
+            channel_info: "",
+            video_list: "",
+            timestamp: `Timestamp ${new Date().toLocaleString()}`,
+            isHovered: false,
+            itemPerPage: 12, 
+            currentPage: 1 
+          },
+          computed: {
+            totalPages() {
+              return Math.ceil(this.video_list.length / this.itemPerPage);
+            },
+            paginatedVideoList() {
+              const startIndex = (this.currentPage - 1) * this.itemPerPage;
+              const endIndex = startIndex + this.itemPerPage;
+              return this.video_list.slice(startIndex, endIndex);
+            }
+          },
+          methods: {
+            fetchData(){
+                axios.get('youtube_channel_json.php')
+                .then(response => {
+                    this.channel_info = response.data.info[0];
+                    this.video_list = response.data.videos;
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+            },
+            viewVideo(url){
+              window.open(url, '_blank');
+            },
+            previousPage() {
+              if (this.currentPage > 1) {
+                this.currentPage--;
+              }
+            },
+            nextPage() {
+              if (this.currentPage < this.totalPages) {
+                this.currentPage++;
+                this.$refs.content.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+            }
+          },
+          mounted() {
+            this.fetchData();
+          },
+        })
+      </script>
+</body>
+</html>

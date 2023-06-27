@@ -1,8 +1,8 @@
 <?php
     include "./db_connection.php";
     $db = $conn;
- 
     $api_key = "AIzaSyDwBFlIqH5woPKwtkDBIlZf9Nn5Kq7-C7g";
+    
     loadData($api_key);
 
     function loadData($apiKey){

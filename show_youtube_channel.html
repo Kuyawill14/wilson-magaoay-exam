@@ -21,7 +21,6 @@
     </script>
 </head>
 <body>
-
     <div id="MainApp" v-bind:title="timestamp" class="experiment-block">   
       <div class="container mx-auto">
         <div class="p-4">
@@ -47,21 +46,12 @@
                 </svg>
               </span>
             </span>
-          <!--   <span v-bind:class="isHovered == item.id ? 'opacity-100' : 'opacity-0'" class="absolute top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/4">
-              <span class="h-full w-full rounded-lg bg-gray-500 opacity-60 absolute top-0 left-0"></span>
-              <span class="h-16 w-16 rounded-full opacity-100 flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M0 10C0 4.477 4.477 0 10 0s10 4.477 10 10-4.477 10-10 10S0 15.523 0 10zm9.996 7.585a.793.793 0 0 1-.62-.303l-4.903-6a.799.799 0 0 1 0-1.013l4.903-6a.797.797 0 0 1 1.233.994L6.003 10l4.604 5.725a.798.798 0 0 1-.612 1.26z" clip-rule="evenodd" />
-                </svg>
-              </span>
-            </span> -->
             <div class="p-4">
               <h2 class="text-lg font-semibold text-primaryColor leading-7">{{item.title}}</h2>
               <p class="line-clamp-4 overflow-hidden my-3">
                 {{item.description}}
               </p>
             </div>
-           
           </div>
         </div>
         <div class="flex justify-between my-5 gap-4 items-center">

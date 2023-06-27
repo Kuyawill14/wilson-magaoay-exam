@@ -21,7 +21,7 @@
     </script>
 </head>
 <body>
-    <div id="MainApp" v-bind:title="timestamp" class="experiment-block">   
+    <div id="MainApp" class="experiment-block">   
       <div class="container mx-auto">
         <div class="p-4">
           <div class="text-center">
@@ -70,7 +70,6 @@
           data: {
             channel_info: "",
             video_list: "",
-            timestamp: `Timestamp ${new Date().toLocaleString()}`,
             isHovered: false,
             itemPerPage: 12, 
             currentPage: 1 

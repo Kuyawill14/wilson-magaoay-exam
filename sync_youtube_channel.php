@@ -17,7 +17,7 @@
                 $checkVideo = "SELECT * FROM `youtube_channel_videos` WHERE `id`='{$video['id']}'";
                 $CheckVideoExecute = mysqli_query($db, $checkVideo);
                 if (mysqli_num_rows($CheckVideoExecute) == 0) {
-                    $status = storeYoutubeChannelVideos($video);
+                    $status = storeYoutubeChannelVideos($video, $channel_info['id']);
                     if($status["statusCode"] == 201){
                         echo $status["message"];
                         break;
@@ -116,7 +116,7 @@
         }
     }
 
-    function storeYoutubeChannelVideos($videoData)
+    function storeYoutubeChannelVideos($videoData, $channel_id)
     {
         global $db;
         $id = $videoData['id'];
@@ -125,8 +125,8 @@
         $video_link = "https://www.youtube.com/watch?v=".$videoData['id'];
         $thumbnail = $videoData['thumbnail'];
     
-        $sql = "INSERT INTO youtube_channel_videos(id,title,description,video_link,thumbnail)
-        VALUES('$id','$title','$description','$video_link','$thumbnail')";
+        $sql = "INSERT INTO youtube_channel_videos(id,title,description,video_link,thumbnail,youtube_channel_id)
+        VALUES('$id','$title','$description','$video_link','$thumbnail','$channel_id')";
         $execute = mysqli_query($db, $sql);
         if($execute == true) {
             return array("statusCode"=>200);

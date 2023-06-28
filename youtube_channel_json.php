@@ -13,8 +13,9 @@
         $youtube_info = $pdo->prepare('SELECT * FROM youtube_channels');
         $youtube_info->execute();
         $data_info = $youtube_info->fetchAll(PDO::FETCH_ASSOC);
-        
-        $youtube_videos = $pdo->prepare('SELECT * FROM youtube_channel_videos');
+
+        $youtube_videos = $pdo->prepare('SELECT * FROM youtube_channel_videos WHERE youtube_channel_id = :channel_id');
+        $youtube_videos->bindParam(':channel_id', $data_info[0]['id'], PDO::PARAM_STR);
         $youtube_videos->execute();
         $data_videos_list = $youtube_videos->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
